@@ -23,11 +23,13 @@ function smallest(x, y, z){
 
 function findResult(box, boxVolume, cubes){
 
+    //get the total volume of all cubes 
     var totalCubesVolume = 0;
     for(var i=0; i<cubes.length -1; i++){
         totalCubesVolume = totalCubesVolume + (cubes[i] * (cubes[i + 1] * cubes[i + 1] * cubes[i + 1]))
         i++;
     }
+    //check if the total volume of all cubes is smaller than the volume of the box, if true return -1
     if(totalCubesVolume < boxVolume)
             return -1;
 
@@ -35,28 +37,39 @@ function findResult(box, boxVolume, cubes){
     var i=cubes.length-1;
     var cubeVolume = cubes[i]*cubes[i]*cubes[i];
 
-    var occ = 0;
+    var occupied = 0;
+    // iterate through the cubes array starting with the biggest size cube
     while(i>0){
+        // check if the cube fits in the box
         if( box[0]/cubes[i] >=1 && box[1]/cubes[i] >= 1 && box[2]/cubes[i] >= 1 && boxVolume >= cubeVolume ){
-            if(cubes[i]==1 || occ == 0 || cubes[i]<=box[0]-occ || cubes[i]<=box[1]-occ || cubes[i]<=box[2]-occ ){
+            // check if the cube fits after the box was occupied by bigger cubes
+            if(cubes[i]==1 || occupied == 0 || cubes[i]<=box[0]-occupied || cubes[i]<=box[1]-occupied || cubes[i]<=box[2]-occupied ){
             
+                // get maximum nr of cubes that fit in the box 
                 z= Math.trunc(box[0]/cubes[i]) * Math.trunc(box[1]/cubes[i]) * Math.trunc(box[2]/cubes[i]);
                 
+                //decrese the volume of the box by the volume of maximum size cubes that fit the box
+
+                //if there are enough cubes of max size in the array we put the maximum number (z)
                 if( cubes[i-1] > z && boxVolume >= z * cubeVolume ){
                 
                     cubesNrForBox = cubesNrForBox + z;
                     boxVolume = boxVolume - z * cubeVolume;
                    
-                    occ = occ+cubes[i]
+                    occupied = occupied+cubes[i]
 
-                }else if( cubes[i-1] <= z && boxVolume >= cubes[i-1] * cubeVolume ){
+                }
+                //if there are not enough cubes of max size in the array we put whatever many we have (cubes[i-1])
+                else if( cubes[i-1] <= z && boxVolume >= cubes[i-1] * cubeVolume ){
                     
                     cubesNrForBox = cubesNrForBox + Number(cubes[i-1])
                     
                     boxVolume = boxVolume - cubes[i-1] * cubeVolume;
-                    occ = occ+cubes[i];
+                    occupied = occupied+cubes[i];
                     
-                }else if( boxVolume < cubes[i-1] * cubeVolume){
+                }
+                //if we can still fit cubes (1x1x1 cases) we put as many as we need to fill the box
+                else if( boxVolume < cubes[i-1] * cubeVolume){
                     while(boxVolume!=0){
                         
                         cubesNrForBox ++;
@@ -70,8 +83,11 @@ function findResult(box, boxVolume, cubes){
         cubeVolume = cubes[i]*cubes[i]*cubes[i];
     }
 
+    //if array finished iterating and it didn't fill the box it returns -1
     if(boxVolume > 0)
         return -1;
+    
+    //if array finished iterating and it filled the box it returns the result
     return cubesNrForBox;
 }
 
